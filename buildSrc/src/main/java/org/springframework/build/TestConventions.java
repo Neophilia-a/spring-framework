@@ -94,6 +94,7 @@ class TestConventions {
 		}
 	}
 
+
 	private void configureTestRetryPlugin(Project project, Test test) {
 		project.getPlugins().withType(TestRetryPlugin.class, testRetryPlugin -> {
 			TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
