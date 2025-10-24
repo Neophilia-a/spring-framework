@@ -49,3 +49,4 @@ atlassian-ide-plugin.xml
 .vscode/
 
 cached-antora-playbook.yml
+/spirng-source-read/build/tmp/compileJava/previous-compilation-data.bin
