@@ -1,0 +1,22 @@
+description = "Spring Debug Module"
+
+// 覆盖编译器参数，移除 -Werror 以避免警告导致构建失败
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs = options.compilerArgs.findAll { it != '-Werror' }
+	options.encoding = 'UTF-8'
+}
+
+// 配置 application 插件以支持运行 main 方法
+apply plugin: 'application'
+mainClassName = 'cn.totoro7.Test'
+
+// 配置运行时 JVM 参数，设置文件编码为 UTF-8
+tasks.withType(JavaExec).configureEach {
+	systemProperty 'file.encoding', 'UTF-8'
+	systemProperty 'sun.stdout.encoding', 'UTF-8'
+	systemProperty 'sun.stderr.encoding', 'UTF-8'
+}
+
+dependencies {
+	implementation(project(":spring-context"))
+}

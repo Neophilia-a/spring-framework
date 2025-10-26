@@ -32,7 +32,9 @@ tasks.named('compileGroovy') {
 	// Groovy only needs the declared dependencies (and not the result of Java compilation)
 	classpath = sourceSets.main.compileClasspath
 }
-tasks.named('compileKotlin') {
-	// Kotlin also depends on the result of Groovy compilation
-	classpath += files(sourceSets.main.groovy.classesDirectory)
+pluginManager.withPlugin('kotlin') {
+	tasks.named('compileKotlin') {
+		// Kotlin also depends on the result of Groovy compilation
+		libraries.from(files(sourceSets.main.groovy.classesDirectory))
+	}
 }
