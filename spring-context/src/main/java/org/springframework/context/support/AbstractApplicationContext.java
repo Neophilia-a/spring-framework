@@ -253,6 +253,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Create a new AbstractApplicationContext with no parent.
 	 */
 	public AbstractApplicationContext() {
+		// 创建资源模式处理器
 		this.resourcePatternResolver = getResourcePatternResolver();
 	}
 
@@ -555,13 +556,21 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		synchronized (this.startupShutdownMonitor) {
 			StartupStep contextRefresh = this.applicationStartup.start("spring.context.refresh");
 
-			// Prepare this context for refreshing.
+			// 容器刷新的准备工作
+			// 1.设置容器的启动时间
+			// 2.设置容器的活跃状态为true
+			// 3.设置容器的关闭状态为false
+			// 4.获取Environment对象，并加载到当前系统的属性值中
+			// 5.准备监听器和事件的集合对象，默认为空集合
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			// 创建容器对象：DefaultListableBeanFactory
+			// 加载xml文件属性到容器中，最重要的是BeanDefinition
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			// beanFactory的一些初始值的设置
 			prepareBeanFactory(beanFactory);
 
 			try {
@@ -639,24 +648,29 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Initialize any placeholder property sources in the context environment.
+		// 留给子类覆盖，初始化属性资源
 		initPropertySources();
 
 		// Validate that all properties marked as required are resolvable:
 		// see ConfigurablePropertyResolver#setRequiredProperties
+		// 创建并获取环境对象，验证对应的必要属性是否已经放入对应的环境
 		getEnvironment().validateRequiredProperties();
 
 		// Store pre-refresh ApplicationListeners...
+		// 判断当前应用程序的监听器机会是否为空，为空，则将当前监听器对象放入集合中，这里的applicationListeners我们可以在创建容器的时候进行设置
 		if (this.earlyApplicationListeners == null) {
 			this.earlyApplicationListeners = new LinkedHashSet<>(this.applicationListeners);
 		}
 		else {
 			// Reset local application listeners to pre-refresh state.
+			// 如果不为空，先清空再添加当前监听器集合
 			this.applicationListeners.clear();
 			this.applicationListeners.addAll(this.earlyApplicationListeners);
 		}
 
 		// Allow for the collection of early ApplicationEvents,
 		// to be published once the multicaster is available...
+		// 创建一个事件集合
 		this.earlyApplicationEvents = new LinkedHashSet<>();
 	}
 
@@ -676,7 +690,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #getBeanFactory()
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+		// 初始化BenaFactor，并且进行XML文件的读取，将得到的BeanFactory记录到当前实体的属性中
 		refreshBeanFactory();
+		// 返回当前实体中的BeanFactory对象
 		return getBeanFactory();
 	}
 
