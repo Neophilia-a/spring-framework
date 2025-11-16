@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd">
-
+	   xmlns:totoro="http://www.totoro7.cn/schema/totoro"
+       xsi:schemaLocation="
+       		http://www.springframework.org/schema/beans
+       		http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.totoro7.cn/schema/totoro
+			http://www.totoro7.cn/schema/totoro.xsd"
+>
+	<totoro:user id="totoro" username="zhangsan" email="123@qq.com" age="11"></totoro:user>
+<!--	<context:property-placeholder location="db.properties" value-separator=":"></context:property-placeholder>-->
     <!-- 定义一个简单的 User bean -->
-<!--    <bean id="user" class="cn.totoro7.entity.User" init-method="init">-->
-<!--        <property name="name" value="张三"/>-->
-<!--        <property name="age" value="25"/>-->
-<!--    </bean>-->
+    <bean id="user" class="cn.totoro7.entity.User" init-method="init">
+        <property name="name" value="张三"/>
+        <property name="age" value="25"/>
+    </bean>
 
 	<bean id="user2" class="cn.totoro7.entity.User" init-method="init">
 		<constructor-arg index="0" value="zhangsan"></constructor-arg>

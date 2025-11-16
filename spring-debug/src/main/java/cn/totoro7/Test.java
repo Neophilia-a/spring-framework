@@ -1,5 +1,6 @@
 package cn.totoro7;
 
+import cn.totoro7.selftag.User;
 import cn.totoro7.service.MyApplicationContextService;
 import cn.totoro7.service.MyClassPathXmlApplicationContext;
 import org.springframework.context.ApplicationContext;
@@ -19,5 +20,7 @@ public class Test {
 		MyApplicationContextService myApplicationContextService = (MyApplicationContextService) applicationContext.getBean("myApplicationContextService");
 		System.out.println(myApplicationContextService.getApplicationContext());
 		System.out.println("ssfsgag");
+		User user = (User) applicationContext.getBean("totoro");
+		System.out.println(user.getUsername());
 	}
 }
