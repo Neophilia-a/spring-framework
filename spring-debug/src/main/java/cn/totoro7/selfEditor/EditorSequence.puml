@@ -1,0 +1,123 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+@startuml
+skinparam sequence {
+    ArrowColor #2C3E50
+    ActorBorderColor #2C3E50
+    LifeLineBorderColor #2C3E50
+    LifeLineBackgroundColor #FFFFFF
+
+    ParticipantBorderColor #2C3E50
+    ParticipantBackgroundColor #FFFFFF
+    ParticipantFontName "Consolas"
+    ParticipantFontSize 13
+
+    NoteBackgroundColor #FEF9E7
+    NoteBorderColor #F1C40F
+}
+
+actor User
+participant Context as "ClassPathXml\nApplicationContext"
+participant Reader as "XmlBeanDefinition\nReader"
+participant Factory as "DefaultListable\nBeanFactory"
+participant Configurer as "CustomEditor\nConfigurer"
+participant BW as "BeanWrapperImpl"
+participant Editor as "AddressPropertyEditor\n(自定义)" #D5F5E3
+participant Pojo as "Customer Bean"
+
+autonumber
+
+== 阶段一：资源定位与解析 (Loading & Parsing) ==
+
+User -> Context: new ClassPathXmlApplicationContext("beans.xml")
+activate Context
+Context -> Context: <b>refresh()</b>
+
+Context -> Factory: obtainFreshBeanFactory()
+activate Factory
+Factory -> Reader: <b>loadBeanDefinitions(xml)</b>
+activate Reader
+
+note right of Reader
+  <b>1. 读取 XML 文件</b>
+  解析 <bean id="customer">...
+  解析 <bean class="CustomEditorConfigurer">...
+  将它们封装为 <b>BeanDefinition</b> 对象
+  (此时并未创建 Customer 对象，只是存了定义)
+end note
+
+Reader -> Factory: registerBeanDefinition()
+deactivate Reader
+deactivate Factory
+
+== 阶段二：应用扩展配置 (Registration) ==
+note right of Context
+  <b><color:Red>【关键扩展点入口】</color></b>
+  Spring 发现 XML 里定义了一个
+  BeanFactoryPostProcessor (即 CustomEditorConfigurer)
+  会优先执行它
+end note
+
+Context -> Context: invokeBeanFactoryPostProcessors()
+
+Context -> Configurer: <b>postProcessBeanFactory(factory)</b>
+activate Configurer
+
+Configurer -> Factory: <b>registerCustomEditor</b>(Address.class, AddressPropertyEditor)
+note right of Factory
+  <b>注册动作：</b>
+  Factory 内部维护了一个 Map<Class, Class>
+  记录了 Address -> AddressPropertyEditor 的映射关系
+  供后续使用
+end note
+
+deactivate Configurer
+
+== 阶段三：Bean 实例化与属性填充 (Instantiation) ==
+
+Context -> Context: finishBeanFactoryInitialization()
+Context -> Factory: <b>getBean("customer")</b>
+activate Factory
+
+Factory -> Factory: createBean() -> doCreateBean()
+
+' 1. 实例化
+Factory -> Factory: createBeanInstance()
+note right: Customer 对象被 new 出来 (属性全为 null)
+
+' 2. 填充属性
+Factory -> Factory: <b>populateBean()</b>
+note right: 读取 BeanDefinition 中的 PropertyValues\n(name="address", value="广东省_...")
+
+Factory -> BW: <b>setPropertyValues()</b>
+activate BW
+
+loop 属性赋值
+    BW -> BW: setPropertyValue()
+    note right of BW: 发现目标类型 Address 与源类型 String 不匹配
+
+    BW -> Factory: getCustomEditor(Address.class)
+    Factory --> BW: 返回 <b>AddressPropertyEditor</b> (阶段二注册的)
+
+    BW -> Editor: <b>setAsText("广东省_...")</b>
+    activate Editor #D5F5E3
+    note right of Editor: <b><color:Red>【扩展点核心逻辑】</color></b>\n执行 split 和 new Address()
+    Editor --> BW: void
+    deactivate Editor
+
+    BW -> Editor: <b>getValue()</b>
+    activate Editor #D5F5E3
+    return Address Object
+
+    BW -> Pojo: <b>setAddress(object)</b>
+    activate Pojo
+    return
+end
+
+deactivate BW
+return Customer Bean (Ready)
+
+deactivate Context
+
+@enduml

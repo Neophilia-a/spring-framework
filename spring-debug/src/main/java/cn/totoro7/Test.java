@@ -1,5 +1,6 @@
 package cn.totoro7;
 
+import cn.totoro7.selfEditor.Customer;
 import cn.totoro7.selftag.User;
 import cn.totoro7.service.MyApplicationContextService;
 import cn.totoro7.service.MyClassPathXmlApplicationContext;
@@ -15,12 +16,16 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Test {
 	public static void main(String[] args) {
 //		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-${username}.xml");
-		ApplicationContext applicationContext = new MyClassPathXmlApplicationContext("applicationContext.xml");
-		System.out.println(applicationContext.getBean("user"));
-		MyApplicationContextService myApplicationContextService = (MyApplicationContextService) applicationContext.getBean("myApplicationContextService");
-		System.out.println(myApplicationContextService.getApplicationContext());
-		System.out.println("ssfsgag");
-		User user = (User) applicationContext.getBean("totoro");
-		System.out.println(user.getUsername());
+//		ApplicationContext applicationContext = new MyClassPathXmlApplicationContext("applicationContext.xml");
+		//System.out.println(applicationContext.getBean("user"));
+		//MyApplicationContextService myApplicationContextService = (MyApplicationContextService) applicationContext.getBean("myApplicationContextService");
+		//System.out.println(myApplicationContextService.getApplicationContext());
+		//System.out.println("ssfsgag");
+		//User user = (User) applicationContext.getBean("totoro");
+		//System.out.println(user.getUsername());
+		ApplicationContext applicationContext = new MyClassPathXmlApplicationContext("selfEditor.xml");
+		Customer bean = applicationContext.getBean(Customer.class);
+		System.out.println(bean);
+
 	}
 }

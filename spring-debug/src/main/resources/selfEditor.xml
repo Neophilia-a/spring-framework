@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 定义一个Custombean -->
+	<bean id="customer" class="cn.totoro7.selfEditor.Customer">
+		<property name="name" value="张三"></property>
+		<property name="address" value="广东省_深圳市_龙岗区"></property>
+	</bean>
+
+	<!-- 定义注册的注册器 -->
+<!--	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">-->
+<!--		<property name="propertyEditorRegistrars">-->
+<!--			<list>-->
+<!--				<bean class="cn.totoro7.selfEditor.AddressPropertyEditorRegister"></bean>-->
+<!--			</list>-->
+<!--		</property>-->
+<!--	</bean>-->
+	<!--两种方式实现 下面的也可以	-->
+
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="customEditors">
+			<map>
+				<entry key="cn.totoro7.selfEditor.Address">
+					<value>
+						cn.totoro7.selfEditor.AddressPropertyEditor
+					</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+</beans>
