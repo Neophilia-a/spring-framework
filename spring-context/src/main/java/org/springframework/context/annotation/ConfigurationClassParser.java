@@ -222,14 +222,19 @@ class ConfigurationClassParser {
 
 
 	protected void processConfigurationClass(ConfigurationClass configClass, Predicate<String> filter) throws IOException {
+		// 判断是否跳过解析
 		if (this.conditionEvaluator.shouldSkip(configClass.getMetadata(), ConfigurationPhase.PARSE_CONFIGURATION)) {
 			return;
 		}
 
+		// 第一次进入的时候，configurationClasses的size肯定为0， ConfigurationClass为null，在此处理Configuration重复import
+		// 如果同一个配置类被处理两次，两次都属于Import则合并导入，否则移除旧的使用新的
+		// 处理Imported的情况，当前类是否被别的类Import
 		ConfigurationClass existingClass = this.configurationClasses.get(configClass);
 		if (existingClass != null) {
 			if (configClass.isImported()) {
 				if (existingClass.isImported()) {
+					// 如果要处理的配置类在已经解析处理的配置类中记录已经存在，合并两个的import
 					existingClass.mergeImportedBy(configClass);
 				}
 				// Otherwise ignore new imported config class; existing non-imported class overrides it.
@@ -244,12 +249,15 @@ class ConfigurationClassParser {
 		}
 
 		// Recursively process the configuration class and its superclass hierarchy.
+		// 由于配置类可能存在父类（若父类的全类名是以java开头的除外） 所有需要将configClass变成sourceClass去解析，然后返回sourceClass的父类
+		// 如果父类为空，则不会进行while循环解析
+		// SourceClass的意义，简单的包装类，目的是为了统一方式去处理带有注解的类
 		SourceClass sourceClass = asSourceClass(configClass, filter);
 		do {
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass, filter);
 		}
 		while (sourceClass != null);
-
+		// 将解析的配置类存储，在parse的能直接取到值
 		this.configurationClasses.put(configClass, configClass);
 	}
 

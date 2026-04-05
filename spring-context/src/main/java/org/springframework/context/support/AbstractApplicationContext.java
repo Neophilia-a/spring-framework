@@ -575,20 +575,24 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				// 子类覆盖的方法做额外的处理，此处我们一般不做任何扩展工作，到那时可以查看web中的代码，是有具体实现的
 				postProcessBeanFactory(beanFactory);
 
 				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
 				// Invoke factory processors registered as beans in the context.
-				// 调用各种beanfactory处理器
+				// 调用各种beanfactory处理器BFPP
 				invokeBeanFactoryPostProcessors(beanFactory);
 				// Register bean processors that intercept bean creation.
+				// 注册各种bean的后置处理器，后续调用在getBean里面
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
 
 				// Initialize message source for this context.
+				// 上下文初始化消息源，即不同语言的消息体，国际化处理
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				// 上下文初始化事件多播器，即监听器
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
@@ -716,7 +720,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Configure the bean factory with context callbacks.
 		// 添加一个BeanPostProcessor，子类用来完成某些Aware对象的注入
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
-		// 忽略Aware接口，因为前一步已经处理了这几个接口 要不然重复处理了
+		// 忽略Aware接口，因为前一步已经处理了这几个接口 要不然重复处理了，这些接口的实现是由容器的set方法进行进入的
 		// 为啥上面添加的Aware接口被忽略了，这个步骤不可以反着来么，看看@Autoworied 怎么实现注入的
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
@@ -741,6 +745,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// 获取LoadTimeWeaver对象，如果存在，则进行weaving
 		// 增加对AspectJ的支持，在java中织入分为三种方式，分为编译器织入、类加载器织入、运行期织入
 		// 编译器织入是指在java编译器，采用特殊的编译器将切面织入到java类中
+		// 类加载器织入是指在类加载的时候，将切面织入到类中
+		// 运行期织入是指在运行时，将切面织入到类中，采用的是cglib或jdk动态代理
+		// AspectJ提供了两种织入方式一种是编译器织入，一种是类加载器织入，下面的就是类加载器织入LOAD_TIME_WEAVER_BEAN_NAME
 		if (!NativeDetector.inNativeImage() && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
 			// Set a temporary ClassLoader for type matching.
@@ -748,6 +755,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Register default environment beans.
+		// 注册环境变量的bean，默认的系统环境变量bean放到一级缓存中
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, getEnvironment());
 		}
@@ -775,6 +783,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 实例化BeanFactoryPostProcessor对象，并调用其postProcessBeanFactory方法
+	 *
 	 * Instantiate and invoke all registered BeanFactoryPostProcessor beans,
 	 * respecting explicit order if given.
 	 * <p>Must be called before singleton instantiation.

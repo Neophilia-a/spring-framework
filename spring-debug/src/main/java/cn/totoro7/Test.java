@@ -23,7 +23,7 @@ public class Test {
 		//System.out.println("ssfsgag");
 		//User user = (User) applicationContext.getBean("totoro");
 		//System.out.println(user.getUsername());
-		ApplicationContext applicationContext = new MyClassPathXmlApplicationContext("selfEditor.xml");
+		ApplicationContext applicationContext = new MyClassPathXmlApplicationContext("applicationContext.xml");
 		Customer bean = applicationContext.getBean(Customer.class);
 		System.out.println(bean);
 

@@ -78,11 +78,16 @@ class ConditionEvaluator {
 	 * @return if the item should be skipped
 	 */
 	public boolean shouldSkip(@Nullable AnnotatedTypeMetadata metadata, @Nullable ConfigurationPhase phase) {
+		// metadata为空或者配置不存在@Conditional的话，则返回false
 		if (metadata == null || !metadata.isAnnotated(Conditional.class.getName())) {
 			return false;
 		}
-
+		// 采用递归的方式进行解析
 		if (phase == null) {
+			// 段代码实现了配置类的条件化加载：
+			// 识别配置类 - 只对配置类候选者进行条件评估
+			// 提前过滤 - 在解析配置阶段就判断是否需要处理这个配置类
+			// 性能优化 - 如果条件不满足，直接跳过，避免后续不必要的解析和处理
 			if (metadata instanceof AnnotationMetadata &&
 					ConfigurationClassUtils.isConfigurationCandidate((AnnotationMetadata) metadata)) {
 				return shouldSkip(metadata, ConfigurationPhase.PARSE_CONFIGURATION);

@@ -27,4 +27,29 @@
 	<bean id="myApplicationContextService" class="cn.totoro7.service.MyApplicationContextService">
 	</bean>
 
+	<bean id="myBeanFactoryPostProcessor" class="cn.totoro7.service.MyBeanFactoryPostProcessor">
+	</bean>
+
+	<bean id="myBeanDefinitionRegisterPostProcessor" class="cn.totoro7.service.MyBeanDefinitionRegisterPostProcessor">
+	</bean>
+
+	<bean id="customer" class="cn.totoro7.selfEditor.Customer">
+		<property name="name" value="张三"></property>
+		<property name="address" value="广东省_深圳市_龙岗区"></property>
+	</bean>
+
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="customEditors">
+			<map>
+				<entry key="cn.totoro7.selfEditor.Address">
+					<value>
+						cn.totoro7.selfEditor.AddressPropertyEditor
+					</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<context:component-scan base-package="cn.totoro7.service"></context:component-scan>
+
 </beans>

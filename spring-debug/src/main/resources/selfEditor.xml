@@ -32,4 +32,7 @@
 		</property>
 	</bean>
 
+	<bean id="myBeanDefinitionRegisterPostProcessor" class="cn.totoro7.service.MyBeanDefinitionRegisterPostProcessor">
+	</bean>
+
 </beans>
