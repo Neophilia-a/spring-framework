@@ -132,6 +132,7 @@ public class YamlPropertiesFactoryBean extends YamlProcessor implements FactoryB
 	 */
 	protected Properties createProperties() {
 		Properties result = CollectionFactory.createStringAdaptingProperties();
+		// YAML 会先被拍平成 Properties，例如 spring.datasource.url 这样的点号 key。
 		process((properties, map) -> result.putAll(properties));
 		return result;
 	}

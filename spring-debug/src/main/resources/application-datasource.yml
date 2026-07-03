@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:mysql://yaml-host:3306/yaml_db
+    username: yaml_user
+    password: yaml_password

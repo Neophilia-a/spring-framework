@@ -19,4 +19,10 @@ tasks.withType(JavaExec).configureEach {
 
 dependencies {
 	implementation(project(":spring-context"))
+	implementation("org.yaml:snakeyaml")
+}
+
+task propertySourcesDemo(type: JavaExec) {
+	classpath = sourceSets.main.runtimeClasspath
+	main = 'cn.totoro7.propertysource.PropertySourcesOverrideDemo'
 }

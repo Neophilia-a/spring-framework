@@ -77,6 +77,7 @@ public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
 	@Nullable
 	protected <T> T getProperty(String key, Class<T> targetValueType, boolean resolveNestedPlaceholders) {
 		if (this.propertySources != null) {
+			// 配置读取的关键：按照 MutablePropertySources 中的顺序从前往后查找。
 			for (PropertySource<?> propertySource : this.propertySources) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Searching for key '" + key + "' in PropertySource '" +
@@ -84,6 +85,7 @@ public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
 				}
 				Object value = propertySource.getProperty(key);
 				if (value != null) {
+					// 第一个非 null 值直接生效，后面的同名 key 不会再参与本次解析。
 					if (resolveNestedPlaceholders && value instanceof String) {
 						value = resolveNestedPlaceholders((String) value);
 					}

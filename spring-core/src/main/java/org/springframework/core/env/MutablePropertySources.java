@@ -105,6 +105,7 @@ public class MutablePropertySources implements PropertySources {
 	public void addFirst(PropertySource<?> propertySource) {
 		synchronized (this.propertySourceList) {
 			removeIfPresent(propertySource);
+			// 配置覆盖的关键：越靠前优先级越高，解析属性时会越早被遍历到。
 			this.propertySourceList.add(0, propertySource);
 		}
 	}
@@ -115,6 +116,7 @@ public class MutablePropertySources implements PropertySources {
 	public void addLast(PropertySource<?> propertySource) {
 		synchronized (this.propertySourceList) {
 			removeIfPresent(propertySource);
+			// 放到最后表示最低优先级，同名 key 会先被前面的 PropertySource 命中。
 			this.propertySourceList.add(propertySource);
 		}
 	}
