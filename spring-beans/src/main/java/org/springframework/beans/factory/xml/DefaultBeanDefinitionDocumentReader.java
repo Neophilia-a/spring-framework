@@ -173,9 +173,11 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				if (node instanceof Element) {
 					Element ele = (Element) node;
 					if (delegate.isDefaultNamespace(ele)) {
+						// 默认命名空间处理import、alias、bean、beans这些Spring内置标签
 						parseDefaultElement(ele, delegate);
 					}
 					else {
+						// 自定义命名空间例如context、aop、tx，会交给NamespaceHandler解析
 						delegate.parseCustomElement(ele);
 					}
 				}
@@ -305,6 +307,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
 		// BeanDefinitionHolder是beanDefinition对象的封装类，封装了beanDefinition、bean的名字和别名，用它来完成容器的注册
 		// 得到这个BeanDefinitionHolder就意味着beanDefinition是通过beanDefinitionParseDelegate对xml元素按照springbean的规则进行的
+		// 这里只是把<bean>解析成定义信息，还没有调用构造方法创建真实Bean对象
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);

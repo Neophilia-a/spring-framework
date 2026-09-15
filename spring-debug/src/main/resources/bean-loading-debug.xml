@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="
+	   		http://www.springframework.org/schema/beans
+	   		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="beanLoadingBeanFactoryPostProcessor"
+		  class="cn.totoro7.beanloading.BeanLoadingBeanFactoryPostProcessor"/>
+
+	<bean id="beanLoadingBeanPostProcessor"
+		  class="cn.totoro7.beanloading.BeanLoadingBeanPostProcessor"/>
+
+	<bean id="orderRepository"
+		  class="cn.totoro7.beanloading.OrderRepository"/>
+
+	<bean id="orderService"
+		  class="cn.totoro7.beanloading.OrderService"
+		  init-method="init"
+		  destroy-method="destroy">
+		<property name="orderRepository" ref="orderRepository"/>
+		<property name="orderPrefix" value="XML-ORDER"/>
+	</bean>
+
+	<bean id="circularA"
+		  class="cn.totoro7.beanloading.CircularA">
+		<property name="circularB" ref="circularB"/>
+	</bean>
+
+	<bean id="circularB"
+		  class="cn.totoro7.beanloading.CircularB">
+		<property name="circularA" ref="circularA"/>
+	</bean>
+
+</beans>

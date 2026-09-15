@@ -926,11 +926,14 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		// Iterate over a copy to allow for init methods which in turn register new bean definitions.
 		// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
+		// 复制一份beanName列表，避免遍历过程中又注册新的BeanDefinition导致并发修改
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
+			// 合并父子BeanDefinition，拿到真正用于创建Bean的RootBeanDefinition
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+			// 只有非抽象、单例、非懒加载的Bean才会在容器启动时被提前创建
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
 				if (isFactoryBean(beanName)) {
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
@@ -952,6 +955,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					}
 				}
 				else {
+					// 普通单例Bean从这里进入AbstractBeanFactory#doGetBean创建流程
 					getBean(beanName);
 				}
 			}
@@ -1048,6 +1052,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			else {
 				// Still in startup registration phase
 				// 添加到beanDefinitionMap中 注册beanDefinition
+				// map保存定义内容，beanDefinitionNames保存注册顺序，后续preInstantiateSingletons会按顺序遍历
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 				// 记录注册的beanName
 				this.beanDefinitionNames.add(beanName);

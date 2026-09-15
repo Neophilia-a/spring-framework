@@ -437,6 +437,7 @@ public class BeanDefinitionParserDelegate {
 		}
 
 		// 对bean元素进行详细解析
+		// 这里会解析class、scope、lazy-init、constructor-arg、property、init-method等元数据
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
 			if (!StringUtils.hasText(beanName)) {

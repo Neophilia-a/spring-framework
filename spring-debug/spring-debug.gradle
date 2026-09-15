@@ -26,3 +26,8 @@ task propertySourcesDemo(type: JavaExec) {
 	classpath = sourceSets.main.runtimeClasspath
 	main = 'cn.totoro7.propertysource.PropertySourcesOverrideDemo'
 }
+
+task beanLoadingDemo(type: JavaExec) {
+	classpath = sourceSets.main.runtimeClasspath
+	main = 'cn.totoro7.beanloading.BeanLoadingDebugDemo'
+}
